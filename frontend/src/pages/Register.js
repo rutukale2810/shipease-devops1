@@ -56,12 +56,15 @@ const Register = () => {
     }
 
     try {
+      console.log('Registering user with data:', { name, email, phone, role, vehicleType });
+      console.log('API URL:', `${API_URL_USER}/auth/register`);
       const response = await axios.post(
         `${API_URL_USER}/auth/register`,
         { name, email, phone, password, role, vehicleType }
       );
 
       const { token, user } = response.data;
+      console.log('Registration successful:', response.data);
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       navigate(user.role === 'driver' ? '/driver' : '/bookings');
