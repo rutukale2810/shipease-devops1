@@ -21,7 +21,7 @@ const Tracking = ({ bookingId: paramBookingId }) => {
   const fetchUserBookings = useCallback(async () => {
     try {
       const response = await axios.get(
-        `${API_URL_BOOKING}/bookings/user/${user?.id}`,
+        `https://shipease-devops-booking-service.onrender.com/bookings/user/${user?.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setBookings(response.data.bookings);
@@ -66,7 +66,7 @@ const Tracking = ({ bookingId: paramBookingId }) => {
       }
 
       try {
-        const response = await axios.get(`${API_URL_DRIVER}/drivers`, {
+        const response = await axios.get(`https://shipease-devops-jj73.onrender.com/drivers`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -92,7 +92,7 @@ const Tracking = ({ bookingId: paramBookingId }) => {
 
     try {
       const response = await axios.get(
-        `${API_URL_TRACKING}/tracking/${bookingId}`,
+        `https://shipease-devops-tracking-service.onrender.com/tracking/${bookingId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTracking(response.data.tracking);

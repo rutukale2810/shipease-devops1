@@ -57,7 +57,7 @@ const Register = () => {
 
     try {
       console.log('Registering user with data:', { name, email, phone, role, vehicleType });
-      console.log('API URL:', `${API_URL_USER}/auth/register`);
+      console.log('API URL:', `https://shipease-devops-users-service.onrender.com/auth/register`);
       const response = await axios.post(
         `${API_URL_USER}/auth/register`,
         { name, email, phone, password, role, vehicleType }

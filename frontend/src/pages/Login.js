@@ -19,7 +19,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        `${API_URL_USER}/auth/login`,
+        `https://shipease-devops-users-service.onrender.com/auth/login`,
         { email, password }
       );
 

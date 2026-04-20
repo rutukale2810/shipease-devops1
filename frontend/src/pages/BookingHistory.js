@@ -13,7 +13,7 @@ const BookingHistory = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL_BOOKING}/bookings/user/${user?.id}`,
+        `https://shipease-devops-booking-service.onrender.com/bookings/user/${user?.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setBookings(response.data.bookings || []);

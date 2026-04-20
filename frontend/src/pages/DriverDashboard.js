@@ -69,7 +69,7 @@ const DriverDashboard = () => {
 
     try {
       const response = await axios.patch(
-        `${API_URL_DRIVER}/drivers/${driver.driverId}/availability`,
+        `https://shipease-devops-jj73.onrender.com/drivers/${driver.driverId}/availability`,
         { isAvailable: !driver.isAvailable },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -93,7 +93,7 @@ const DriverDashboard = () => {
 
     try {
       const response = await axios.patch(
-        `${API_URL_DRIVER}/drivers/${driver.driverId}/location`,
+        `https://shipease-devops-jj73.onrender.com/drivers/${driver.driverId}/location`,
         locationForm,
         { headers: { Authorization: `Bearer ${token}` } }
       );
