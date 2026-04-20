@@ -2,10 +2,9 @@ import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../utils/AuthContext';
 import TrackingMap from '../components/TrackingMap';
-const API_URL_BOOKING = import.meta.env.VITE_API_URL_BOOKING;
-const API_URL_DRIVER = import.meta.env.VITE_API_URL_DRIVER;
-const API_URL_TRACKING = import.meta.env.VITE_API_URL_TRACKING;
-
+const API_URL_BOOKING = process.env.REACT_APP_API_URL_BOOKING;
+const API_URL_DRIVER = process.env.REACT_APP_API_URL_DRIVER;
+const API_URL_TRACKING = process.env.REACT_APP_API_URL_TRACKING;
 const Tracking = ({ bookingId: paramBookingId }) => {
   const { user, token } = useContext(AuthContext);
   const [bookingId, setBookingId] = useState(paramBookingId || '');

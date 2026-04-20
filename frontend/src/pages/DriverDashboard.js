@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../utils/AuthContext';
-const API_URL_DRIVER = import.meta.env.VITE_API_URL_DRIVER;
 
+const API_URL_DRIVER = process.env.REACT_APP_API_URL_DRIVER;
 const DriverDashboard = () => {
   const { user, token } = useContext(AuthContext);
   const [driver, setDriver] = useState(null);
