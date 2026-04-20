@@ -62,7 +62,7 @@ const Register = () => {
         `${API_URL_USER}/auth/register`,
         { name, email, phone, password, role, vehicleType }
       );
-
+      console.log('ALL ENV:', JSON.stringify(process.env));
       const { token, user } = response.data;
       console.log('Registration successful:', response.data);
       localStorage.setItem('token', token);
