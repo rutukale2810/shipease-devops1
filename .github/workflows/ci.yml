@@ -1,0 +1,109 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install dependencies - User Service
+      run: npm install
+      working-directory: ./services/user-service
+
+    - name: Install dependencies - Booking Service
+      run: npm install
+      working-directory: ./services/booking-service
+
+    - name: Install dependencies - Driver Service
+      run: npm install
+      working-directory: ./services/driver-service
+
+    - name: Install dependencies - Tracking Service
+      run: npm install
+      working-directory: ./services/tracking-service
+
+    - name: Install dependencies - Notification Service
+      run: npm install
+      working-directory: ./services/notification-service
+
+    - name: Install dependencies - Frontend
+      run: npm install
+      working-directory: ./frontend
+
+    - name: Run User Service Tests
+      run: npm test -- --runInBand --forceExit
+      working-directory: ./services/user-service
+
+    - name: Run Booking Service Tests
+      run: npm test -- --runInBand --forceExit
+      working-directory: ./services/booking-service
+
+    - name: Run Driver Service Tests
+      run: npm test -- --runInBand --forceExit
+      working-directory: ./services/driver-service
+
+    - name: Run Tracking Service Tests
+      run: npm test -- --runInBand --forceExit
+      working-directory: ./services/tracking-service
+
+    - name: Run Notification Service Tests
+      run: npm test -- --runInBand --forceExit
+      working-directory: ./services/notification-service
+
+    - name: Build Frontend
+      run: CI=true npm run build
+      working-directory: ./frontend
+
+    - name: Start Integration Stack
+      run: docker compose up -d --build mongodb user-service booking-service driver-service tracking-service notification-service
+
+    - name: Wait For Services
+      run: |
+        for port in 5001 5002 5003 5004 5005; do
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            if curl --fail --silent http://localhost:${port}/health > /dev/null; then
+              echo "Service on ${port} is ready"
+              break
+            fi
+            sleep 3
+          done
+        done
+
+    - name: Seed Drivers For Integration
+      run: docker compose exec -T driver-service npm run seed
+
+    - name: Install Newman
+      run: npm install -g newman
+
+    - name: Run API Contract Tests
+      run: newman run tests/postman/Porter.postman_collection.json --reporters cli,json --reporter-json-export newman-report.json
+
+    - name: Smoke Check Summary
+      run: echo "Backend health smoke tests, frontend build, and Newman contract tests completed successfully" > test-report.txt
+
+    - name: Build Docker Images
+      run: docker compose build
+
+    - name: Upload Test Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-report
+        path: test-report.txt
+
+    - name: Upload Newman Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: newman-report
+        path: newman-report.json

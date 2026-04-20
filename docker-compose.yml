@@ -1,0 +1,126 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: porter_mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: porter_dev
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/porter_dev --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - porter_network
+
+  user-service:
+    build: ./services/user-service
+    container_name: porter_user_service
+    ports:
+      - "5001:5001"
+    environment:
+      PORT: 5001
+      MONGODB_URI: mongodb://mongodb:27017/porter_dev
+      JWT_SECRET: your_super_secret_jwt_key_change_in_production
+      DRIVER_SERVICE_URL: http://driver-service:5003
+      NODE_ENV: production
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - porter_network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  booking-service:
+    build: ./services/booking-service
+    container_name: porter_booking_service
+    ports:
+      - "5002:5002"
+    environment:
+      PORT: 5002
+      MONGODB_URI: mongodb://mongodb:27017/porter_dev
+      DRIVER_SERVICE_URL: http://driver-service:5003
+      TRACKING_SERVICE_URL: http://tracking-service:5004
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      user-service:
+        condition: service_healthy
+    networks:
+      - porter_network
+
+  driver-service:
+    build: ./services/driver-service
+    container_name: porter_driver_service
+    ports:
+      - "5003:5003"
+    environment:
+      PORT: 5003
+      MONGODB_URI: mongodb://mongodb:27017/porter_dev
+      BOOKING_SERVICE_URL: http://booking-service:5002
+      TRACKING_SERVICE_URL: http://tracking-service:5004
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - porter_network
+
+  tracking-service:
+    build: ./services/tracking-service
+    container_name: porter_tracking_service
+    ports:
+      - "5004:5004"
+    environment:
+      PORT: 5004
+      MONGODB_URI: mongodb://mongodb:27017/porter_dev
+      NOTIFICATION_SERVICE_URL: http://notification-service:5005
+      DRIVER_SERVICE_URL: http://driver-service:5003
+      BOOKING_SERVICE_URL: http://booking-service:5002
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - porter_network
+
+  notification-service:
+    build: ./services/notification-service
+    container_name: porter_notification_service
+    ports:
+      - "5005:5005"
+    environment:
+      PORT: 5005
+      MONGODB_URI: mongodb://mongodb:27017/porter_dev
+      USER_SERVICE_URL: http://user-service:5001
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - porter_network
+
+  frontend:
+    build: ./frontend
+    container_name: porter_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_BASE_URL: http://localhost
+    depends_on:
+      - user-service
+    networks:
+      - porter_network
+
+volumes:
+  mongo_data:
+
+networks:
+  porter_network:
+    driver: bridge
