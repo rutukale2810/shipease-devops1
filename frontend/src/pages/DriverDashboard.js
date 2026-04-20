@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../utils/AuthContext';
 
-const API_URL_DRIVER = process.env.REACT_APP_API_URL_DRIVER;
+//const API_URL_DRIVER = process.env.REACT_APP_API_URL_DRIVER;
 const DriverDashboard = () => {
   const { user, token } = useContext(AuthContext);
   const [driver, setDriver] = useState(null);
@@ -19,7 +19,7 @@ const DriverDashboard = () => {
     }
 
     try {
-      const response = await axios.get(`${API_URL_DRIVER}/drivers`, {
+      const response = await axios.get(`https://shipease-devops-jj73.onrender.com/drivers`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

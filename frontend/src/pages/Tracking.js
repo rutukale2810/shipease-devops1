@@ -2,9 +2,9 @@ import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../utils/AuthContext';
 import TrackingMap from '../components/TrackingMap';
-const API_URL_BOOKING = process.env.REACT_APP_API_URL_BOOKING;
-const API_URL_DRIVER = process.env.REACT_APP_API_URL_DRIVER;
-const API_URL_TRACKING = process.env.REACT_APP_API_URL_TRACKING;
+//const API_URL_BOOKING = process.env.REACT_APP_API_URL_BOOKING;
+//const API_URL_DRIVER = process.env.REACT_APP_API_URL_DRIVER;
+//const API_URL_TRACKING = process.env.REACT_APP_API_URL_TRACKING;
 const Tracking = ({ bookingId: paramBookingId }) => {
   const { user, token } = useContext(AuthContext);
   const [bookingId, setBookingId] = useState(paramBookingId || '');
@@ -46,7 +46,7 @@ const Tracking = ({ bookingId: paramBookingId }) => {
     const interval = setInterval(async () => {
       try {
         const updateResponse = await axios.get(
-          `${API_URL_TRACKING}/tracking/${bookingId}`,
+          `https://shipease-devops-tracking-service.onrender.com/tracking/${bookingId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setTracking(updateResponse.data.tracking);
@@ -117,7 +117,7 @@ const Tracking = ({ bookingId: paramBookingId }) => {
 
     try {
       const response = await axios.get(
-        `${API_URL_TRACKING}/tracking/${booking.bookingId}`,
+        `https://shipease-devops-tracking-service.onrender.com/tracking/${booking.bookingId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTracking(response.data.tracking);
