@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../utils/AuthContext';
+const API_URL_DRIVER = import.meta.env.VITE_API_URL_DRIVER;
 
 const DriverDashboard = () => {
   const { user, token } = useContext(AuthContext);
@@ -18,7 +19,7 @@ const DriverDashboard = () => {
     }
 
     try {
-      const response = await axios.get('http://localhost:5003/drivers', {
+      const response = await axios.get(`${API_URL_DRIVER}/drivers`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -68,7 +69,7 @@ const DriverDashboard = () => {
 
     try {
       const response = await axios.patch(
-        `http://localhost:5003/drivers/${driver.driverId}/availability`,
+        `${API_URL_DRIVER}/drivers/${driver.driverId}/availability`,
         { isAvailable: !driver.isAvailable },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -92,7 +93,7 @@ const DriverDashboard = () => {
 
     try {
       const response = await axios.patch(
-        `http://localhost:5003/drivers/${driver.driverId}/location`,
+        `${API_URL_DRIVER}/drivers/${driver.driverId}/location`,
         locationForm,
         { headers: { Authorization: `Bearer ${token}` } }
       );

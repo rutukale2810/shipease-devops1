@@ -124,7 +124,7 @@ const Booking = () => {
 
     try {
       const response = await axios.post(
-        'http://localhost:5002/bookings',
+        `${import.meta.env.VITE_API_URL_BOOKING}/bookings`,
         {
           userId: user?.id,
           pickup,

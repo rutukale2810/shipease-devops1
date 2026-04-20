@@ -2,7 +2,10 @@ import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../utils/AuthContext';
 import TrackingMap from '../components/TrackingMap';
-
+const API_URL_BOOKING = import.meta.env.VITE_API_URL_BOOKING;
+const API_URL_DRIVER = import.meta.env.VITE_API_URL_DRIVER;
+const API_URL_TRACKING = import.meta.env.VITE_API_URL_TRACKING;
+const API_URL_USER = import.meta.env.VITE_API_URL_USER;
 const Tracking = ({ bookingId: paramBookingId }) => {
   const { user, token } = useContext(AuthContext);
   const [bookingId, setBookingId] = useState(paramBookingId || '');
@@ -19,7 +22,7 @@ const Tracking = ({ bookingId: paramBookingId }) => {
   const fetchUserBookings = useCallback(async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5002/bookings/user/${user?.id}`,
+        `${API_URL_BOOKING}/bookings/user/${user?.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setBookings(response.data.bookings);
@@ -44,7 +47,7 @@ const Tracking = ({ bookingId: paramBookingId }) => {
     const interval = setInterval(async () => {
       try {
         const updateResponse = await axios.get(
-          `http://localhost:5004/tracking/${bookingId}`,
+          `${API_URL_TRACKING}/tracking/${bookingId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setTracking(updateResponse.data.tracking);
@@ -64,7 +67,7 @@ const Tracking = ({ bookingId: paramBookingId }) => {
       }
 
       try {
-        const response = await axios.get('http://localhost:5003/drivers', {
+        const response = await axios.get(`${API_URL_DRIVER}/drivers`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -90,7 +93,7 @@ const Tracking = ({ bookingId: paramBookingId }) => {
 
     try {
       const response = await axios.get(
-        `http://localhost:5004/tracking/${bookingId}`,
+        `${API_URL_TRACKING}/tracking/${bookingId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTracking(response.data.tracking);
@@ -115,7 +118,7 @@ const Tracking = ({ bookingId: paramBookingId }) => {
 
     try {
       const response = await axios.get(
-        `http://localhost:5004/tracking/${booking.bookingId}`,
+        `${API_URL_TRACKING}/tracking/${booking.bookingId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTracking(response.data.tracking);

@@ -13,7 +13,7 @@ const BookingHistory = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://localhost:5002/bookings/user/${user?.id}`,
+        `${import.meta.env.VITE_API_URL_BOOKING}/bookings/user/${user?.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setBookings(response.data.bookings || []);

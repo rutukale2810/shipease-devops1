@@ -2,6 +2,8 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../utils/AuthContext';
+const API_URL_USER = import.meta.env.VITE_API_URL_USER;
+
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -18,7 +20,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        'http://localhost:5001/auth/login',
+        `${API_URL_USER}/auth/login`,
         { email, password }
       );
 
