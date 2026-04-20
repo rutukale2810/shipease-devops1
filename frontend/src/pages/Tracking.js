@@ -5,7 +5,7 @@ import TrackingMap from '../components/TrackingMap';
 const API_URL_BOOKING = import.meta.env.VITE_API_URL_BOOKING;
 const API_URL_DRIVER = import.meta.env.VITE_API_URL_DRIVER;
 const API_URL_TRACKING = import.meta.env.VITE_API_URL_TRACKING;
-const API_URL_USER = import.meta.env.VITE_API_URL_USER;
+
 const Tracking = ({ bookingId: paramBookingId }) => {
   const { user, token } = useContext(AuthContext);
   const [bookingId, setBookingId] = useState(paramBookingId || '');
