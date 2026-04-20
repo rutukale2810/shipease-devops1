@@ -56,15 +56,13 @@ const Register = () => {
     }
 
     try {
-      console.log('Registering user with data:', { name, email, phone, role, vehicleType });
-      console.log('API URL:', `https://shipease-devops-users-service.onrender.com/auth/register`);
+     
       const response = await axios.post(
-        `${API_URL_USER}/auth/register`,
+        `https://shipease-devops-users-service.onrender.com/auth/register`,
         { name, email, phone, password, role, vehicleType }
       );
-      console.log('ALL ENV:', JSON.stringify(process.env));
+      
       const { token, user } = response.data;
-      console.log('Registration successful:', response.data);
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       navigate(user.role === 'driver' ? '/driver' : '/bookings');
