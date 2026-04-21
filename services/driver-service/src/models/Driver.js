@@ -38,6 +38,18 @@ const DriverSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  pendingBookings: [{
+    bookingId: String,
+    serviceType: String,
+    parcelWeightKg: Number,
+    pickupName: String,
+    dropName: String,
+    pickupLat: Number,
+    pickupLon: Number,
+    dropLat: Number,
+    dropLon: Number,
+    requestedAt: { type: Date, default: Date.now, expires: 600 } // auto-expire after 10 min
+  }],
   createdAt: {
     type: Date,
     default: Date.now

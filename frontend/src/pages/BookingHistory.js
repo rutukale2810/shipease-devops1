@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../utils/AuthContext';
 
+const BOOKING_API = 'https://shipease-devops-booking-service.onrender.com';
+
 const BookingHistory = () => {
   const { user, token } = useContext(AuthContext);
   const [bookings, setBookings] = useState([]);
@@ -12,11 +14,9 @@ const BookingHistory = () => {
   const fetchUserBookings = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `https://shipease-devops-booking-service.onrender.com/bookings/user/${user?.id}`,
+      const response = await axios.get(`${BOOKING_API}/bookings/user/${user?.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setBookings(response.data.bookings || []);
+      );      setBookings(response.data.bookings || []);
     } catch (err) {
       setError('Could not load booking history.');
     } finally {

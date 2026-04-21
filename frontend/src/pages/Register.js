@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
-//const API_URL_USER = process.env.REACT_APP_API_URL_USER;
+const USER_API = 'https://shipease-devops-users-service.onrender.com';
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -57,10 +57,7 @@ const Register = () => {
 
     try {
      
-      const response = await axios.post(
-        `https://shipease-devops-users-service.onrender.com/auth/register`,
-        { name, email, phone, password, role, vehicleType }
-      );
+      const response = await axios.post(`${USER_API}/auth/register`, { name, email, phone, password, role, vehicleType });
       
       const { token, user } = response.data;
       localStorage.setItem('token', token);

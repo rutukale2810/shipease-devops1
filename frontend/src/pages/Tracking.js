@@ -1,10 +1,13 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../utils/AuthContext';
 import TrackingMap from '../components/TrackingMap';
-//const API_URL_BOOKING = process.env.REACT_APP_API_URL_BOOKING;
-//const API_URL_DRIVER = process.env.REACT_APP_API_URL_DRIVER;
-//const API_URL_TRACKING = process.env.REACT_APP_API_URL_TRACKING;
+
+const USER_API     = 'https://shipease-devops-users-service.onrender.com';
+const BOOKING_API  = 'https://shipease-devops-booking-service.onrender.com';
+const DRIVER_API   = 'https://shipease-devops-jj73.onrender.com';
+const TRACKING_API = 'https://shipease-devops-tracking-service.onrender.com';
+
 const Tracking = ({ bookingId: paramBookingId }) => {
   const { user, token } = useContext(AuthContext);
   const [bookingId, setBookingId] = useState(paramBookingId || '');
@@ -21,7 +24,7 @@ const Tracking = ({ bookingId: paramBookingId }) => {
   const fetchUserBookings = useCallback(async () => {
     try {
       const response = await axios.get(
-        `https://shipease-devops-booking-service.onrender.com/bookings/user/${user?.id}`,
+        `${BOOKING_API}/bookings/user/${user?.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setBookings(response.data.bookings);
@@ -46,7 +49,7 @@ const Tracking = ({ bookingId: paramBookingId }) => {
     const interval = setInterval(async () => {
       try {
         const updateResponse = await axios.get(
-          `https://shipease-devops-tracking-service.onrender.com/tracking/${bookingId}`,
+          `${TRACKING_API}/tracking/${bookingId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setTracking(updateResponse.data.tracking);
@@ -66,7 +69,7 @@ const Tracking = ({ bookingId: paramBookingId }) => {
       }
 
       try {
-        const response = await axios.get(`https://shipease-devops-jj73.onrender.com/drivers`, {
+        const response = await axios.get(`${DRIVER_API}/drivers`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -92,7 +95,7 @@ const Tracking = ({ bookingId: paramBookingId }) => {
 
     try {
       const response = await axios.get(
-        `https://shipease-devops-tracking-service.onrender.com/tracking/${bookingId}`,
+        `${TRACKING_API}/tracking/${bookingId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTracking(response.data.tracking);
@@ -117,7 +120,7 @@ const Tracking = ({ bookingId: paramBookingId }) => {
 
     try {
       const response = await axios.get(
-        `https://shipease-devops-tracking-service.onrender.com/tracking/${booking.bookingId}`,
+        `${TRACKING_API}/tracking/${booking.bookingId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTracking(response.data.tracking);

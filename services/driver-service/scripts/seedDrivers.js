@@ -15,11 +15,11 @@ const seedDrivers = async () => {
     await Driver.deleteMany({});
 
     const drivers = [
-      { driverId: uuidv4(), name: 'Raj Kumar', phone: '9876543210', vehicleType: 'bike', currentLocation: { latitude: 28.6139, longitude: 77.2090 } },
-      { driverId: uuidv4(), name: 'Priya Singh', phone: '9876543211', vehicleType: 'auto', currentLocation: { latitude: 28.6200, longitude: 77.2200 } },
-      { driverId: uuidv4(), name: 'Akshay Verma', phone: '9876543212', vehicleType: 'car', currentLocation: { latitude: 28.6100, longitude: 77.2100 } },
-      { driverId: uuidv4(), name: 'Neha Sharma', phone: '9876543213', vehicleType: 'bike', currentLocation: { latitude: 28.6300, longitude: 77.2300 } },
-      { driverId: uuidv4(), name: 'Vikram Patel', phone: '9876543214', vehicleType: 'car', currentLocation: { latitude: 28.6050, longitude: 77.2050 } }
+      { driverId: uuidv4(), name: 'Raj Kumar',     phone: '9876543210', vehicleType: 'bike',        isAvailable: true, currentLocation: { latitude: 28.6139, longitude: 77.2090 } },
+      { driverId: uuidv4(), name: 'Priya Singh',   phone: '9876543211', vehicleType: 'two_wheeler', isAvailable: true, currentLocation: { latitude: 28.6200, longitude: 77.2200 } },
+      { driverId: uuidv4(), name: 'Akshay Verma',  phone: '9876543212', vehicleType: 'auto',        isAvailable: true, currentLocation: { latitude: 28.6100, longitude: 77.2100 } },
+      { driverId: uuidv4(), name: 'Neha Sharma',   phone: '9876543213', vehicleType: 'small_tempo', isAvailable: true, currentLocation: { latitude: 28.6300, longitude: 77.2300 } },
+      { driverId: uuidv4(), name: 'Vikram Patel',  phone: '9876543214', vehicleType: 'truck',       isAvailable: true, currentLocation: { latitude: 28.6050, longitude: 77.2050 } }
     ];
 
     await Driver.insertMany(drivers);

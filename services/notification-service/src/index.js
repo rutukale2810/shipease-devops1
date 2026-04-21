@@ -45,10 +45,8 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5005;
 
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`🚀 Notification Service running on port ${PORT}`);
-  });
-}
+app.listen(PORT, () => {
+  console.log(`🚀 Notification Service running on port ${PORT}`);
+});
 
 module.exports = app;

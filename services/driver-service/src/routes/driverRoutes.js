@@ -10,5 +10,6 @@ router.post('/release', driverController.releaseDriver);
 router.get('/profile/:driverId', driverController.getDriverProfile);
 router.patch('/:driverId/availability', driverController.updateAvailability);
 router.patch('/:driverId/location', driverController.updateLocation);
+router.post('/:driverId/respond', driverController.respondToBooking);
 
 module.exports = router;

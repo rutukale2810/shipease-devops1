@@ -4,6 +4,8 @@ import { AuthContext } from '../utils/AuthContext';
 import { Link } from 'react-router-dom';
 import LocationAutocomplete from '../components/LocationAutocomplete';
 
+const BOOKING_API = 'https://shipease-devops-booking-service.onrender.com';
+
 const serviceRules = {
   bike: {
     label: 'Bike',
@@ -124,7 +126,7 @@ const Booking = () => {
 
     try {
       const response = await axios.post(
-        `https://shipease-devops-booking-service.onrender.com/bookings`,
+        `${BOOKING_API}/bookings`,
         {
           userId: user?.id,
           pickup,

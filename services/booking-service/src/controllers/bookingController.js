@@ -139,7 +139,9 @@ const createBooking = async (req, res) => {
         pickupLat: pickup.latitude,
         pickupLon: pickup.longitude,
         dropLat: drop.latitude,
-        dropLon: drop.longitude
+        dropLon: drop.longitude,
+        pickupName: pickup.name,
+        dropName: drop.name
       });
 
       if (assignmentResponse.data?.assigned) {
@@ -198,19 +200,19 @@ const getUserBookings = async (req, res) => {
 const updateBookingStatus = async (req, res) => {
   try {
     const { bookingId } = req.params;
-    const { status } = req.body;
+    const { status, driverId } = req.body;
     const allowedStatuses = ['pending', 'pending_driver', 'confirmed', 'in_transit', 'delivered', 'cancelled'];
 
     if (!allowedStatuses.includes(status)) {
       return res.status(400).json({ message: 'Invalid booking status' });
     }
 
+    const updateFields = { status, updatedAt: new Date() };
+    if (driverId) updateFields.driverId = driverId;
+
     const booking = await Booking.findOneAndUpdate(
       { bookingId },
-      {
-        status,
-        updatedAt: new Date()
-      },
+      updateFields,
       { new: true }
     );
 
@@ -218,10 +220,7 @@ const updateBookingStatus = async (req, res) => {
       return res.status(404).json({ message: 'Booking not found' });
     }
 
-    res.status(200).json({
-      message: 'Booking status updated',
-      booking
-    });
+    res.status(200).json({ message: 'Booking status updated', booking });
   } catch (error) {
     console.error('Update Booking Status Error:', error);
     res.status(500).json({ message: 'Failed to update booking status', error: error.message });

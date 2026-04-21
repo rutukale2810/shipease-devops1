@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mongodb:
     image: mongo:7.0
@@ -77,6 +75,7 @@ services:
   tracking-service:
     build: ./services/tracking-service
     container_name: porter_tracking_service
+    restart: unless-stopped
     ports:
       - "5004:5004"
     environment:
@@ -94,6 +93,7 @@ services:
   notification-service:
     build: ./services/notification-service
     container_name: porter_notification_service
+    restart: unless-stopped
     ports:
       - "5005:5005"
     environment:

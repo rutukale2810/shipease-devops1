@@ -2,7 +2,8 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../utils/AuthContext';
-//const API_URL_USER = process.env.REACT_APP_API_URL_USER;
+
+const USER_API = 'https://shipease-devops-users-service.onrender.com';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -20,10 +21,7 @@ const Login = () => {
     try {
 
       //login request to user service
-      const response = await axios.post(
-        `https://shipease-devops-users-service.onrender.com/auth/login`,
-        { email, password }
-      );
+      const response = await axios.post(`${USER_API}/auth/login`, { email, password });
 
       const { token, user } = response.data;
       localStorage.setItem('token', token);

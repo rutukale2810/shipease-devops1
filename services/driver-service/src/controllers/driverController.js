@@ -17,8 +17,8 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 
 const SERVICE_TO_VEHICLE = {
   bike: ['bike', 'two_wheeler'],
-  small_tempo: ['auto', 'small_tempo'],
-  truck: [ 'truck']
+  small_tempo: ['small_tempo', 'auto'],
+  truck: ['truck']
 };
 
 const getAllDrivers = async (req, res) => {
@@ -78,9 +78,8 @@ const createDriver = async (req, res) => {
 
 const assignDriver = async (req, res) => {
   try {
-    const { bookingId, pickupLat, pickupLon, dropLat, dropLon, serviceType } = req.body;
+    const { bookingId, pickupLat, pickupLon, dropLat, dropLon, serviceType, parcelWeightKg, pickupName, dropName } = req.body;
 
-    // Get available drivers
     const availableDrivers = await Driver.find({ isAvailable: true });
     const allowedVehicles = SERVICE_TO_VEHICLE[serviceType] || null;
     const eligibleDrivers = allowedVehicles
@@ -89,15 +88,13 @@ const assignDriver = async (req, res) => {
 
     if (eligibleDrivers.length === 0) {
       console.warn('⚠️ No available drivers for booking:', bookingId);
-      return res.status(200).json({ 
-        message: 'No drivers available',
-        assigned: false
-      });
+      return res.status(200).json({ message: 'No drivers available', assigned: false });
     }
 
-    // Sort by distance to pickup
+    // Sort by distance to pickup, pick nearest
     const driversWithDistance = eligibleDrivers.map(driver => ({
       ...driver.toObject(),
+      _mongoId: driver._id,
       distance: calculateDistance(
         driver.currentLocation.latitude,
         driver.currentLocation.longitude,
@@ -106,38 +103,94 @@ const assignDriver = async (req, res) => {
       )
     })).sort((a, b) => a.distance - b.distance);
 
-    const assignedDriver = driversWithDistance[0];
+    const nearest = driversWithDistance[0];
 
-    // Update driver availability
-    await Driver.findByIdAndUpdate(assignedDriver._id, { isAvailable: false });
-
-    // Notify tracking service
-    try {
-      await axios.post(`${process.env.TRACKING_SERVICE_URL}/tracking/start/${bookingId}`, {
-        driverId: assignedDriver.driverId,
-        pickupLat,
-        pickupLon,
-        dropLat,
-        dropLon
-      });
-    } catch (trackingError) {
-      console.warn('⚠️ Tracking start failed:', trackingError.message);
-    }
+    // Send request to nearest driver (push to pendingBookings)
+    await Driver.findByIdAndUpdate(nearest._mongoId, {
+      $push: {
+        pendingBookings: {
+          bookingId,
+          serviceType,
+          parcelWeightKg,
+          pickupName: pickupName || '',
+          dropName: dropName || '',
+          pickupLat,
+          pickupLon,
+          dropLat,
+          dropLon,
+          requestedAt: new Date()
+        }
+      }
+    });
 
     res.status(200).json({
-      message: 'Driver assigned successfully',
-      assigned: true,
+      message: 'Request sent to driver',
+      assigned: false,
+      requested: true,
       driver: {
-        driverId: assignedDriver.driverId,
-        name: assignedDriver.name,
-        phone: assignedDriver.phone,
-        vehicleType: assignedDriver.vehicleType,
-        distance: assignedDriver.distance.toFixed(2) + ' km'
+        driverId: nearest.driverId,
+        name: nearest.name,
+        vehicleType: nearest.vehicleType,
+        distance: nearest.distance.toFixed(2) + ' km'
       }
     });
   } catch (error) {
     console.error('Assign Driver Error:', error);
     res.status(500).json({ message: 'Driver assignment failed', error: error.message });
+  }
+};
+
+const respondToBooking = async (req, res) => {
+  try {
+    const { driverId } = req.params;
+    const { bookingId, accept } = req.body;
+
+    const driver = await Driver.findOne({ driverId });
+    if (!driver) return res.status(404).json({ message: 'Driver not found' });
+
+    const pending = driver.pendingBookings.find(b => b.bookingId === bookingId);
+    if (!pending) return res.status(404).json({ message: 'Booking request not found' });
+
+    // Remove from pending regardless of accept/reject
+    await Driver.findOneAndUpdate(
+      { driverId },
+      { $pull: { pendingBookings: { bookingId } } }
+    );
+
+    if (!accept) {
+      return res.status(200).json({ message: 'Booking rejected' });
+    }
+
+    // Mark driver unavailable
+    await Driver.findOneAndUpdate({ driverId }, { isAvailable: false });
+
+    // Update booking status to confirmed + set driverId
+    try {
+      await axios.patch(`${process.env.BOOKING_SERVICE_URL}/bookings/${bookingId}/status`, {
+        status: 'confirmed',
+        driverId
+      });
+    } catch (err) {
+      console.warn('⚠️ Booking status update failed:', err.message);
+    }
+
+    // Start tracking
+    try {
+      await axios.post(`${process.env.TRACKING_SERVICE_URL}/tracking/start/${bookingId}`, {
+        driverId,
+        pickupLat: pending.pickupLat,
+        pickupLon: pending.pickupLon,
+        dropLat: pending.dropLat,
+        dropLon: pending.dropLon
+      });
+    } catch (err) {
+      console.warn('⚠️ Tracking start failed:', err.message);
+    }
+
+    res.status(200).json({ message: 'Booking accepted', bookingId, driverId });
+  } catch (error) {
+    console.error('Respond To Booking Error:', error);
+    res.status(500).json({ message: 'Failed to respond to booking', error: error.message });
   }
 };
 
@@ -244,6 +297,7 @@ module.exports = {
   getDriverProfile,
   createDriver,
   assignDriver,
+  respondToBooking,
   releaseDriver,
   updateAvailability,
   updateLocation
