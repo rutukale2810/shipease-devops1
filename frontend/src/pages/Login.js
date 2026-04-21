@@ -18,6 +18,8 @@ const Login = () => {
     setError('');
 
     try {
+
+      //login request to user service
       const response = await axios.post(
         `https://shipease-devops-users-service.onrender.com/auth/login`,
         { email, password }
