@@ -107,3 +107,5 @@ jobs:
       with:
         name: newman-report
         path: newman-report.json
+    - name: Trigger Render Deployment
+      run: curl -X POST "YOUR_RENDER_DEPLOY_HOOK_URL"
