@@ -107,5 +107,24 @@ jobs:
       with:
         name: newman-report
         path: newman-report.json
+        
     - name: Trigger Render Deployment
-      run: curl -X POST "YOUR_RENDER_DEPLOY_HOOK_URL"
+      run: curl -X POST "https://api.render.com/deploy/srv-d7j4l1e7r5hc73b9ohhg?key=k-kNzw4bjrU"
+      
+    - name: Deploy User Service
+      run: curl -X POST "https://api.render.com/deploy/srv-d7j653vlk1mc73abob6g?key=XSTP9mXyAu0"
+
+    - name: Deploy Booking Service
+      run: curl -X POST "https://api.render.com/deploy/srv-d7j7rajeo5us73a0p6a0?key=_CPJ9PFZcoI"
+
+    - name: Deploy Driver Service
+      run: curl -X POST "https://api.render.com/deploy/srv-d7j4s31o3t8c73b4fsdg?key=G-T8-6oy-ZU"
+
+    - name: Deploy Tracking Service
+      run: curl -X POST "https://api.render.com/deploy/srv-d7j5c3jeo5us73eb588g?key=XUeoqWLrycE"
+
+    - name: Deploy Notification Service
+      run: curl -X POST "https://api.render.com/deploy/srv-d7j5ef8sfn5c73eg9250?key=sdKJmQQB7f8"
+
+    - name: Deploy Frontend
+      run: curl -X POST "https://api.render.com/deploy/srv-d7j50k3bc2fs73e5pu10?key=9Fh_mscbUpo"
